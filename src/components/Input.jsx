@@ -4,9 +4,9 @@ export default function Input({ label, textarea, ...props }) {
 
   return (
     <p className="flex flex-col gap-1 my-4">
-      <lable className="text-sm font-bold uppercase text-stone-500">
+      <label className="text-sm font-bold uppercase text-stone-500">
         {label}
-      </lable>
+      </label>
       {textarea ? (
         <textarea className={classes} {...props} />
       ) : (
