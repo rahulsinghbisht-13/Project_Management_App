@@ -9,7 +9,32 @@ function App() {
   const [newProjectState, setNewProjectState] = useState({
     selectedProjectId: undefined,
     projects: [],
+    tasks: [],
   });
+
+  function handleAddTask(enteredTask) {
+    setNewProjectState((prevProjectState) => {
+      const taskId = Math.random();
+      const newTask = {
+        task: enteredTask,
+        projectId: prevProjectState.selectedProjectId,
+        id: taskId,
+      };
+      return {
+        ...prevProjectState,
+        tasks: [newTask, ...prevProjectState.tasks],
+      };
+    });
+  }
+
+  function handleDeleteTask(taskId) {
+    setNewProjectState((prevProjectState) => {
+      return {
+        ...prevProjectState,
+        tasks: prevProjectState.tasks.filter((task) => task.id !== taskId),
+      };
+    });
+  }
 
   function handleCreateNewProject() {
     setNewProjectState((prevProjectState) => {
@@ -53,27 +78,36 @@ function App() {
     });
   }
 
+  function handleDeleteProject() {
+    setNewProjectState((prevProjectState) => {
+      return {
+        ...prevProjectState,
+        selectedProjectId: undefined,
+        projects: prevProjectState.projects.filter(
+          (project) => project.id !== prevProjectState.selectedProjectId
+        ),
+        tasks: prevProjectState.tasks.filter(
+          (task) => task.projectId !== prevProjectState.selectedProjectId
+        ),
+      };
+    });
+  }
+
   const selectedProject = newProjectState.projects.find(
     (project) => project.id == newProjectState.selectedProjectId
   );
 
-  function handleDeleteProject(projectId) {
-    const remainingProjects = newProjectState.projects.filter(
-      (project) => project.id !== projectId
-    );
-    setNewProjectState((...prevProjectState) => {
-      return {
-        ...prevProjectState,
-        selectedProjectId: undefined,
-        projects: remainingProjects,
-      };
-    });
-  }
+  const selectedProjectTasks = newProjectState.tasks.filter(
+    (task) => task.projectId === newProjectState.selectedProjectId
+  );
 
   let content = (
     <SelectedProject
       project={selectedProject}
       onDeleteProject={handleDeleteProject}
+      onAddTask={handleAddTask}
+      onDeleteTask={handleDeleteTask}
+      taskList={selectedProjectTasks}
     />
   );
 
@@ -91,7 +125,7 @@ function App() {
         onCreateNewProject={handleCreateNewProject}
         projectsList={newProjectState.projects}
         onSelectProject={handleSelectProject}
-        selectedProjectId={newProjectState.projects.selectedProjectId}
+        selectedProjectId={newProjectState.selectedProjectId}
       />
       {content}
     </main>
